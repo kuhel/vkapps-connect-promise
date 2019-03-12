@@ -1,0 +1,25 @@
+{
+  "name": "vkapps-connect-promise",
+  "version": "0.1.12",
+  "private": true,
+  "homepage": "https://kuhel.github.io/VK-Connect-Promise-Test-App",
+  "dependencies": {
+    "@vkontakte/icons": "^1.1.1",
+    "@vkontakte/vkui": "^2.9.4",
+    "@vkontakte/vkui-connect": "^1.1.2",
+    "core-js": "^2.5.7",
+    "gh-pages": "^1.2.0",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "react-scripts": "1.1.4",
+    "whatwg-fetch": "^3.0.0"
+  },
+  "scripts": {
+    "start": "PORT=10888 react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "deploy": "gh-pages -d build",
+    "predeploy": "npm run build"
+  }
+}
