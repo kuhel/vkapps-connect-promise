@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import * as UI from '@vkontakte/vkui';
-import * as VKConnect from '@vkontakte/vkui-connect';
-// import * as VKConnect from './vkui-connect/desktop';
-// import * as VKConnect from '@vkontakte/vkui-connect-desktop';
+// import * as VKConnect from '@vkontakte/vkui-connect';
+import * as VKConnect from './vkui-connect/desktop';
 import '@vkontakte/vkui/dist/vkui.css';
 
 export default class App extends Component {
@@ -55,7 +54,7 @@ export default class App extends Component {
             <UI.View activePanel="main">
                 <UI.Panel id="main">
                     <UI.PanelHeader>
-                        VK Connect Test v2.1.0
+                        VK Connect Promise TEst v0.1.0
                     </UI.PanelHeader>
                     <UI.Group title="Data">
                         <UI.FormLayout>
@@ -82,7 +81,14 @@ export default class App extends Component {
                                                     data = JSON.parse(input);
                                                 }
 
-                                                VKConnect.send(eventName, data);
+                                                VKConnect.send(eventName, data)
+                                                    .then((e) => {
+                                                        e = e.detail;
+                                                        let type = e['type'];
+                                                        if (['VKWebAppUpdateInfo', 'VKWebAppUpdateInsets', 'VKWebAppUpdateConfig'].indexOf(type) === -1) {
+                                                            document.getElementById('response').value = JSON.stringify(e);
+                                                        }
+                                                    });
                                             } catch(e) {
                                                 alert(e);
                                             }
