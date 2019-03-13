@@ -56,7 +56,7 @@
 		  if (promise.customRequestId) {
 			delete data['request_id'];
 		  }
-		  promises[data.request_id].resolve(data)
+		  promise.resolve(data)
 		}
 	   });
 	}
