@@ -39,16 +39,6 @@ export default class App extends Component {
         ].sort();
     }
 
-    componentWillMount() {
-        VKConnect.subscribe(function(e) {
-            e = e.detail;
-            let type = e['type'];
-            if (['VKWebAppUpdateInfo', 'VKWebAppUpdateInsets', 'VKWebAppUpdateConfig'].indexOf(type) === -1) {
-                document.getElementById('response').value = JSON.stringify(e);
-            }
-        });
-    }
-
     render() {
         return (
             <UI.View activePanel="main">
