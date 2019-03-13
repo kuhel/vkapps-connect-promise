@@ -46,17 +46,21 @@
 		if (isWeb) {
 		  if (args[0].data && args[0].data.data) {
 			promise = promises[args[0].data.data.request_id];
-			data = { ...args[0].data.data };
+			data = { ...args[0].data };
 		  }
 		} else if (args[0].detail && args[0].detail.data && args[0].detail.data.request_id) {
 		  promise = promises[args[0].detail.data.request_id];
-		  data = { ...args[0].detail.data };
+		  data = { ...args[0].detail };
 		}
 		if (promise) {
 		  if (promise.customRequestId) {
-			delete data['request_id'];
+			delete data.data['request_id'];
 		  }
-		  promise.resolve(data)
+		  if (isWeb) {
+			promise.resolve(data)
+		  } else {
+			promise.resolve(args)
+		  }
 		}
 	   });
 	}
