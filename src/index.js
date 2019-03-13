@@ -6,6 +6,6 @@ import * as VKConnect from '@vkontakte/vkui-connect';
 // import * as VKConnect from './vkui-connect/desktop';
 import App from './App';
 
-VKConnect.send('VKWebAppInit', {no_toolbar: false});
+VKConnect.send('VKWebAppInit');
 
 ReactDOM.render(<App/>, document.getElementById('root'));

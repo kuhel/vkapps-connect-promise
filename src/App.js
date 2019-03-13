@@ -4,7 +4,6 @@ import * as VKConnect from '@vkontakte/vkui-connect';
 // import * as VKConnect from './vkui-connect/desktop';
 // import * as VKConnect from '@vkontakte/vkui-connect-desktop';
 import '@vkontakte/vkui/dist/vkui.css';
-import {fetch as fetchPolyfill} from 'whatwg-fetch';
 
 export default class App extends Component {
     constructor(props) {
@@ -39,11 +38,6 @@ export default class App extends Component {
             "VKWebAppResizeWindow",
             "VKWebAppClose",
         ].sort();
-
-        this.onService = this.onService.bind(this);
-        this.onServiceNew = this.onServiceNew.bind(this);
-        this.onGroup = this.onGroup.bind(this);
-        this.onUser = this.onUser.bind(this);
     }
 
     componentWillMount() {
@@ -54,41 +48,6 @@ export default class App extends Component {
                 document.getElementById('response').value = JSON.stringify(e);
             }
         });
-    }
-
-    componentDidMount() {
-        fetchPolyfill('https://extype.ru/sandbox/api.php?recipient=service')
-        .then((response) => response.json())
-        .then((data) => {
-            console.log(data);
-            this.setState({
-                actions: { ...data },
-            });
-        });
-    }
-
-    onService() {
-        if (this.state.actions.service) {
-            VKConnect.send('VKWebAppOpenPayForm', {"app_id": 6695435, "action": "pay-to-service", "params": this.state.actions.service});
-        }
-    }
-
-    onServiceNew() {
-        if (this.state.actions.service_new) {
-            VKConnect.send('VKWebAppOpenPayForm', {"app_id": 6695435, "action": "pay-to-service", "params": this.state.actions.service_new});
-        }
-    }
-
-    onGroup() {
-        if (this.state.actions.group) {
-            VKConnect.send('VKWebAppOpenPayForm', {"app_id": 6695435, "action": "pay-to-group", "params": this.state.actions.group});
-        }
-    }
-
-    onUser() {
-        if (this.state.actions.user) {
-            VKConnect.send('VKWebAppOpenPayForm', {"app_id": 6695435, "action": "pay-to-user", "params": this.state.actions.user});
-        }
     }
 
     render() {
@@ -108,23 +67,6 @@ export default class App extends Component {
                         <UI.FormLayout>
                             <UI.Textarea id='response' />
                         </UI.FormLayout>
-                    </UI.Group>
-
-                    <UI.Group title="Pay To">
-                        <UI.List>
-                            <UI.ListItem onClick={this.onService}>
-                                Pay To Service
-                            </UI.ListItem>
-                            <UI.ListItem onClick={this.onServiceNew}>
-                                Pay To Service New
-                            </UI.ListItem>
-                            <UI.ListItem onClick={this.onGroup}>
-                                Pay To Group
-                            </UI.ListItem>
-                            <UI.ListItem onClick={this.onUser}>
-                                Pay To User
-                            </UI.ListItem>
-                        </UI.List>
                     </UI.Group>
 
                     <UI.Group title="Event type">
