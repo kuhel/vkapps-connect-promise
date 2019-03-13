@@ -1,6 +1,6 @@
 {
   "name": "vkapps-connect-promise",
-  "version": "0.1.12",
+  "version": "0.1.0",
   "private": true,
   "homepage": "https://kuhel.github.io/VK-Connect-Promise-Test-App",
   "dependencies": {
