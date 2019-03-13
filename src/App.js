@@ -44,7 +44,7 @@ export default class App extends Component {
             <UI.View activePanel="main">
                 <UI.Panel id="main">
                     <UI.PanelHeader>
-                        VK Connect Promise Test v0.1.2
+                        VK Connect Promise Test v0.1.31
                     </UI.PanelHeader>
                     <UI.Group title="Data">
                         <UI.FormLayout>
@@ -73,8 +73,8 @@ export default class App extends Component {
 
                                                 VKConnect.send(eventName, data)
                                                     .then((e) => {
-                                                        e = e.detail;
-                                                        let type = e['type'];
+                                                        console.log(e);
+                                                        let type = e.type;
                                                         if (['VKWebAppUpdateInfo', 'VKWebAppUpdateInsets', 'VKWebAppUpdateConfig'].indexOf(type) === -1) {
                                                             document.getElementById('response').value = JSON.stringify(e);
                                                         }
