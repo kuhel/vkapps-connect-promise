@@ -29,38 +29,24 @@
 	  }
   
 	  window.addEventListener(eventType, function() {
-		var args = Array.prototype.slice.call(arguments);
-		// if (isWeb) {
-		//   subscribers.forEach(function(fn) {
-		//     fn({
-		//       detail: args[0].data
-		//     });
-		//   });
-		// } else {
-		//   subscribers.forEach(function(fn) {
-		//     fn.apply(null, args);
-		//   });
-		// }
+		var args = Array.prototype.slice.call(arguments)[0];
 		var promise = null;
-		var data = {};
+		var reponse = {};
 		if (isWeb) {
-		  if (args[0].data && args[0].data.data) {
-			promise = promises[args[0].data.data.request_id];
-			data = { ...args[0].data };
+		  if (args.data && args.data.data) {
+			promise = promises[args.data.data.request_id];
+			reponse = { ...args.data };
 		  }
-		} else if (args[0].detail && args[0].detail.data && args[0].detail.data.request_id) {
-		  promise = promises[args[0].detail.data.request_id];
-		  data = { ...args[0].detail };
+		} else if (args.detail && args.detail.data) {
+		  promise = promises[args.detail.data.request_id];
+		  reponse = { ...args.detail };
 		}
+		promise = promises[reponse.data.request_id];
 		if (promise) {
 		  if (promise.customRequestId) {
-			delete data.data['request_id'];
+			delete reponse.data['request_id'];
 		  }
-		  if (isWeb) {
-			promise.resolve(data)
-		  } else {
-			promise.resolve(args)
-		  }
+		  promise.resolve(reponse);
 		}
 	   });
 	}

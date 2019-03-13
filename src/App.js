@@ -72,11 +72,11 @@ export default class App extends Component {
                                                 }
 
                                                 VKConnect.send(eventName, data)
-                                                    .then((e) => {
-                                                        console.log(e);
-                                                        let type = e.type;
+                                                    .then((data) => {
+                                                        console.log(data);
+                                                        let type = data.type;
                                                         if (['VKWebAppUpdateInfo', 'VKWebAppUpdateInsets', 'VKWebAppUpdateConfig'].indexOf(type) === -1) {
-                                                            document.getElementById('response').value = JSON.stringify(e);
+                                                            document.getElementById('response').value = JSON.stringify(data);
                                                         }
                                                     });
                                             } catch(e) {
