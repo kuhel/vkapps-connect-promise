@@ -28,27 +28,31 @@
 		})();
 	  }
   
-	  window.addEventListener(eventType, function() {
-		var args = Array.prototype.slice.call(arguments)[0];
-		var promise = null;
-		var reponse = {};
-		if (isWeb) {
-		  if (args.data && args.data.data) {
-			promise = promises[args.data.data.request_id];
-			reponse = { ...args.data };
-		  }
-		} else if (args.detail && args.detail.data) {
-		  promise = promises[args.detail.data.request_id];
-		  reponse = { ...args.detail };
-		}
-		promise = promises[reponse.data.request_id];
-		if (promise) {
-		  if (promise.customRequestId) {
-			delete reponse.data['request_id'];
-		  }
-		  promise.resolve(reponse);
-		}
-	   });
+		window.addEventListener(eventType, function() {
+			var args = Array.prototype.slice.call(arguments)[0];
+			var promise = null;
+			var reponse = {};
+			if (isWeb) {
+				if (args.data && args.data.data) {
+					reponse = { ...args.data };
+					promise = promises[reponse.data.request_id];
+				}
+			} else if (args.detail && args.detail.data) {
+				reponse = { ...args.detail };
+				promise = promises[reponse.data.request_id];
+			}
+			promise = promises[reponse.data.request_id];
+			if (promise) {
+				if (promise.customRequestId) {
+					delete reponse.data['request_id'];
+				}
+				if (reponse['error_type']) {
+					promise.reject(reponse);
+				} else {
+					promise.resolve(reponse);
+				}
+			}
+		});
 	}
   
 	module.exports = {
