@@ -12,7 +12,7 @@
     "react": "^16.8.4",
     "react-dom": "^16.4.1",
     "react-scripts": "1.1.4",
-    "vkui-connect-promise": "^0.1.1",
+    "vkui-connect-promise": "^0.1.15",
     "whatwg-fetch": "^3.0.0"
   },
   "scripts": {
