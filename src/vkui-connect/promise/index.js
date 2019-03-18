@@ -58,6 +58,10 @@ window.addEventListener(eventType, function (event) {
     reponse = _extends({}, event.detail);
     promise = promises[reponse.data.request_id];
   }
+  /* eslint no-console: "off" */
+
+
+  console.log(eventType, reponse, promises);
 
   if (reponse.data && reponse.data.request_id) {
     promise = promises[reponse.data.request_id];
@@ -116,10 +120,7 @@ var index = {
         type: 'vk-connect'
       }, '*');
     }
-    /* eslint-disable */
 
-
-    debugger;
     return new Promise(function (resolve, reject) {
       promises[id] = {
         resolve: resolve,
