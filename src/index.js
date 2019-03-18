@@ -7,6 +7,20 @@ import VKConnect from './vkui-connect/promise';
 // import VKConnect from 'vkui-connect-promise';
 import App from './App';
 
-VKConnect.send('VKWebAppInit');
+VKConnect.send('VKWebAppInit')
+	.then((data) => {
+		console.log(data);
+		let type = data.type;
+		if (['VKWebAppUpdateInfo', 'VKWebAppUpdateInsets', 'VKWebAppUpdateConfig'].indexOf(type) === -1) {
+			document.getElementById('response').value = JSON.stringify(data);
+		}
+	})
+	.catch((data) => {
+		console.log(data);
+		let type = data.type;
+		if (['VKWebAppUpdateInfo', 'VKWebAppUpdateInsets', 'VKWebAppUpdateConfig'].indexOf(type) === -1) {
+			document.getElementById('response').value = JSON.stringify(data);
+		}
+	});
 
 ReactDOM.render(<App/>, document.getElementById('root'));
