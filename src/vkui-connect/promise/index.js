@@ -46,21 +46,26 @@ var eventType = isWeb ? 'message' : 'VKWebAppEvent';
 var promises = {};
 var method_counter = 0;
 
-function Defer(params, id, customRequestId) {
+function Defer() {
   var res = null;
   var rej = null;
   var promise = new Promise(function (resolve, reject) {
     res = resolve;
     rej = reject;
-    promises[id] = {
-      resolve: resolve,
-      reject: reject,
-      params: params,
-      customRequestId: customRequestId
-    };
   });
   promise.resolve = res;
   promise.reject = rej;
+  return promise;
+}
+
+function DeferFabrika(params, id, customRequestId) {
+  var promise = new Defer();
+  promises[id] = {
+    resolve: promise.resolve,
+    reject: promise.reject,
+    params: params,
+    customRequestId: customRequestId
+  };
   return promise;
 }
 
@@ -140,7 +145,7 @@ var index = {
       }, '*');
     }
 
-    return new Defer(params, id, customRequestId);
+    return new DeferFabrika(params, id, customRequestId);
   }
 };
 
