@@ -61,8 +61,7 @@ function Defer() {
 function DeferFabrika(params, id, customRequestId) {
   var promise = new Defer();
   promises[id] = {
-    resolve: promise.resolve,
-    reject: promise.reject,
+    defer: promise,
     params: params,
     customRequestId: customRequestId
   };
@@ -96,9 +95,9 @@ window.addEventListener(eventType, function (event) {
       console.log(promise);
 
       if (reponse.data['error_type']) {
-        promise.reject(reponse);
+        promise.defer.reject(reponse);
       } else {
-        promise.resolve(reponse);
+        promise.defer.resolve(reponse);
       }
     }
   }
