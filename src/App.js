@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import * as UI from '@vkontakte/vkui';
 // import * as VKConnect from '@vkontakte/vkui-connect';
-// import VKConnect from './vkui-connect/promise';
-import VKConnect from 'vkui-connect-promise';
+import VKConnect from './vkui-connect/promise';
+// import VKConnect from 'vkui-connect-promise';
 import '@vkontakte/vkui/dist/vkui.css';
 
 export default class App extends Component {
@@ -45,7 +45,7 @@ export default class App extends Component {
             <UI.View activePanel="main">
                 <UI.Panel id="main">
                     <UI.PanelHeader>
-                        VK Connect Promise Test v0.1.41
+                        VK Connect Promise Test v0.1.42
                     </UI.PanelHeader>
                     <UI.Group title="Data">
                         <UI.FormLayout>
