@@ -58,10 +58,11 @@ function Defer() {
   return promise;
 }
 
-function DeferFabrika(params, id, customRequestId) {
+function DeferFabric(params, id, customRequestId) {
   var promise = new Defer();
   promises[id] = {
-    defer: promise,
+    resolve: promise.resolve,
+    reject: promise.reject,
     params: params,
     customRequestId: customRequestId
   };
@@ -95,9 +96,9 @@ window.addEventListener(eventType, function (event) {
       console.log(promise);
 
       if (reponse.data['error_type']) {
-        promise.defer.reject(reponse);
+        promise.reject(reponse);
       } else {
-        promise.defer.resolve(reponse);
+        promise.resolve(reponse);
       }
     }
   }
@@ -144,7 +145,7 @@ var index = {
       }, '*');
     }
 
-    return new DeferFabrika(params, id, customRequestId);
+    return new DeferFabric(params, id, customRequestId);
   }
 };
 

@@ -79,6 +79,13 @@ export default class App extends Component {
                                                         if (['VKWebAppUpdateInfo', 'VKWebAppUpdateInsets', 'VKWebAppUpdateConfig'].indexOf(type) === -1) {
                                                             document.getElementById('response').value = JSON.stringify(data);
                                                         }
+                                                    })
+                                                    .catch((data) => {
+                                                        console.log(data);
+                                                        let type = data.type;
+                                                        if (['VKWebAppUpdateInfo', 'VKWebAppUpdateInsets', 'VKWebAppUpdateConfig'].indexOf(type) === -1) {
+                                                            document.getElementById('response').value = JSON.stringify(data);
+                                                        }
                                                     });
                                             } catch(e) {
                                                 alert(e);
