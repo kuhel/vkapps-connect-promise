@@ -41,7 +41,11 @@ if (!window.CustomEvent) {
 
 var FUNCTION = 'function';
 var UNDEFINED = 'undefined';
-var isWeb = typeof window !== UNDEFINED && !window.AndroidBridge && !window.webkit;
+var EVENT_PREFIX = 'VKWebApp';
+var isClient = typeof window !== UNDEFINED;
+var androidBridge = isClient && window.AndroidBridge;
+var iosBridge = isClient && window.webkit && window.webkit.messageHandlers;
+var isWeb = !androidBridge && !iosBridge;
 var eventType = isWeb ? 'message' : 'VKWebAppEvent';
 var promises = {};
 var desktopEvents = [];
@@ -96,10 +100,11 @@ window.addEventListener(eventType, function (event) {
 });
 var index = (function () {
   var urlParams = getUrlParams(window.location.href);
-	console.log(urlParams);
+
   if (urlParams['vk_events']) {
-		desktopEvents = urlParams['vk_events'].split(',');
-		console.log(desktopEvents);
+    desktopEvents = urlParams['vk_events'].split(',').map(function (event) {
+      return EVENT_PREFIX + event;
+    });
   }
 
   return {
@@ -116,10 +121,6 @@ var index = (function () {
         params = {};
       }
 
-      var isClient = typeof window !== UNDEFINED;
-      var androidBridge = isClient && window.AndroidBridge;
-      var iosBridge = isClient && window.webkit && window.webkit.messageHandlers;
-      var isDesktop = !androidBridge && !iosBridge;
       var id = params['request_id'] ? params['request_id'] : "method#" + method_counter++;
       var customRequestId = false;
 
@@ -136,7 +137,7 @@ var index = (function () {
         iosBridge[handler].postMessage(params);
       }
 
-      if (isDesktop) {
+      if (isWeb) {
         parent.postMessage({
           handler: handler,
           params: params,
@@ -154,9 +155,6 @@ var index = (function () {
       });
     },
     supports: function supports(handler) {
-      var isClient = typeof window !== UNDEFINED;
-      var androidBridge = isClient && window.AndroidBridge;
-      var iosBridge = isClient && window.webkit && window.webkit.messageHandlers;
       if (androidBridge && typeof androidBridge[handler] === FUNCTION) return true;
       if (iosBridge && iosBridge[handler] && typeof iosBridge[handler].postMessage === FUNCTION) return true;
       if (~desktopEvents.indexOf(handler)) return true;
