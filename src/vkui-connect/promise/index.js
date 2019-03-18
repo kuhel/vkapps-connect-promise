@@ -38,7 +38,7 @@ if (!window.CustomEvent) {
 /* global window, parent */
 
 /* eslint no-restricted-globals: ["off", "parent"] */
-/* eslint no-console: "off" */
+
 var FUNCTION = 'function';
 var UNDEFINED = 'undefined';
 var isWeb = typeof window !== UNDEFINED && !window.AndroidBridge && !window.webkit;
@@ -46,23 +46,28 @@ var eventType = isWeb ? 'message' : 'VKWebAppEvent';
 var promises = {};
 var method_counter = 0;
 
-function Defer() {
+function Defer(params, id, customRequestId) {
   var res = null;
   var rej = null;
   var promise = new Promise(function (resolve, reject) {
     res = resolve;
     rej = reject;
+    promises[id] = {
+      resolve: resolve,
+      reject: reject,
+      params: params,
+      customRequestId: customRequestId
+    };
   });
   promise.resolve = res;
   promise.reject = rej;
-  console.log(promise);
   return promise;
 }
 
 window.addEventListener(eventType, function (event) {
   var promise = null;
   var reponse = {};
-  console.log('Промисы\n', promises);
+
   if (isWeb) {
     if (event.data && event.data.data) {
       reponse = _extends({}, event.data);
@@ -80,6 +85,8 @@ window.addEventListener(eventType, function (event) {
       if (promise.customRequestId) {
         delete reponse.data['request_id'];
       }
+      /* eslint no-console: "off" */
+
 
       console.log(promise);
 
@@ -133,14 +140,7 @@ var index = {
       }, '*');
     }
 
-    return new Defer(function (resolve, reject) {
-      promises[id] = {
-        resolve: resolve,
-        reject: reject,
-        params: params,
-        customRequestId: customRequestId
-      };
-    });
+    return new Defer(params, id, customRequestId);
   }
 };
 

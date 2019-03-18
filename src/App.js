@@ -45,7 +45,7 @@ export default class App extends Component {
             <UI.View activePanel="main">
                 <UI.Panel id="main">
                     <UI.PanelHeader>
-                        VK Connect Promise Test v0.1.43
+                        VK Connect Promise Test v0.1.44
                     </UI.PanelHeader>
                     <UI.Group title="Data">
                         <UI.FormLayout>
