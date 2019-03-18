@@ -45,30 +45,6 @@ var isWeb = typeof window !== UNDEFINED && !window.AndroidBridge && !window.webk
 var eventType = isWeb ? 'message' : 'VKWebAppEvent';
 var promises = {};
 var method_counter = 0;
-
-function Defer() {
-  var res = null;
-  var rej = null;
-  var promise = new Promise(function (resolve, reject) {
-    res = resolve;
-    rej = reject;
-  });
-  promise.resolve = res;
-  promise.reject = rej;
-  return promise;
-}
-
-function DeferFabric(params, id, customRequestId) {
-  var promise = new Defer();
-  promises[id] = {
-    resolve: promise.resolve,
-    reject: promise.reject,
-    params: params,
-    customRequestId: customRequestId
-  };
-  return promise;
-}
-
 window.addEventListener(eventType, function (event) {
   var promise = null;
   var reponse = {};
@@ -90,15 +66,11 @@ window.addEventListener(eventType, function (event) {
       if (promise.customRequestId) {
         delete reponse.data['request_id'];
       }
-      /* eslint no-console: "off" */
-
-
-      console.log(promise);
 
       if (reponse.data['error_type']) {
-        promise.reject(reponse);
+        return promise.reject(reponse);
       } else {
-        promise.resolve(reponse);
+        return promise.resolve(reponse);
       }
     }
   }
@@ -145,7 +117,14 @@ var index = {
       }, '*');
     }
 
-    return new DeferFabric(params, id, customRequestId);
+    return new Promise(function (resolve, reject) {
+      promises[id] = {
+        resolve: resolve,
+        reject: reject,
+        params: params,
+        customRequestId: customRequestId
+      };
+    });
   }
 };
 
