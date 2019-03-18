@@ -7039,9 +7039,9 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-vkui-connect-promise@^0.1.15:
-  version "0.1.15"
-  resolved "https://registry.yarnpkg.com/vkui-connect-promise/-/vkui-connect-promise-0.1.15.tgz#0046d10bf74252d556b83f770525eb75dc390fe3"
+vkui-connect-promise@0.1.16:
+  version "0.1.16"
+  resolved "https://registry.yarnpkg.com/vkui-connect-promise/-/vkui-connect-promise-0.1.16.tgz#466fdae26b9baab718846c8f05cd264c85ae328d"
   dependencies:
     "@babel/polyfill" "^7.2.5"
 
