@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import * as UI from '@vkontakte/vkui';
 // import * as VKConnect from '@vkontakte/vkui-connect';
-// import VKConnect from './vkui-connect/promise';
-import VKConnect from 'vkui-connect-promise';
+import VKConnect from './vkui-connect/promise';
+// import VKConnect from 'vkui-connect-promise';
 import '@vkontakte/vkui/dist/vkui.css';
 
 export default class App extends Component {
@@ -45,7 +45,7 @@ export default class App extends Component {
             <UI.View activePanel="main">
                 <UI.Panel id="main">
                     <UI.PanelHeader>
-                        VK Connect Promise Test v0.1.52
+                        VK Connect Promise Test v0.1.53
                     </UI.PanelHeader>
                     <UI.Group title="Data">
                         <UI.FormLayout>
@@ -71,22 +71,23 @@ export default class App extends Component {
                                                 if (input.length > 0) {
                                                     data = JSON.parse(input);
                                                 }
-
-                                                VKConnect.send(eventName, data)
-                                                    .then((data) => {
-                                                        console.log(data);
-                                                        let type = data.type;
-                                                        if (['VKWebAppUpdateInfo', 'VKWebAppUpdateInsets', 'VKWebAppUpdateConfig'].indexOf(type) === -1) {
-                                                            document.getElementById('response').value = JSON.stringify(data);
-                                                        }
-                                                    })
-                                                    .catch((data) => {
-                                                        console.log(data);
-                                                        let type = data.type;
-                                                        if (['VKWebAppUpdateInfo', 'VKWebAppUpdateInsets', 'VKWebAppUpdateConfig'].indexOf(type) === -1) {
-                                                            document.getElementById('response').value = JSON.stringify(data);
-                                                        }
-                                                    });
+                                                if (VKConnect.supports(eventName)) {
+                                                    VKConnect.send(eventName, data)
+                                                        .then((data) => {
+                                                            console.log(data);
+                                                            let type = data.type;
+                                                            if (['VKWebAppUpdateInfo', 'VKWebAppUpdateInsets', 'VKWebAppUpdateConfig'].indexOf(type) === -1) {
+                                                                document.getElementById('response').value = JSON.stringify(data);
+                                                            }
+                                                        })
+                                                        .catch((data) => {
+                                                            console.log(data);
+                                                            let type = data.type;
+                                                            if (['VKWebAppUpdateInfo', 'VKWebAppUpdateInsets', 'VKWebAppUpdateConfig'].indexOf(type) === -1) {
+                                                                document.getElementById('response').value = JSON.stringify(data);
+                                                            }
+                                                        });
+                                                }
                                             } catch(e) {
                                                 alert(e);
                                             }

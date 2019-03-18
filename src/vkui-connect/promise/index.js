@@ -44,37 +44,38 @@ var UNDEFINED = 'undefined';
 var isWeb = typeof window !== UNDEFINED && !window.AndroidBridge && !window.webkit;
 var eventType = isWeb ? 'message' : 'VKWebAppEvent';
 var promises = {};
+var desktopEvents = [];
 var method_counter = 0;
 window.addEventListener(eventType, function (event) {
   var promise = null;
-  var reponse = {};
+  var response = {};
 
   if (isWeb) {
     if (event.data && event.data.data) {
-      reponse = _extends({}, event.data);
-      promise = promises[reponse.data.request_id];
+      response = _extends({}, event.data);
+      promise = promises[response.data.request_id];
+
+      if (response.type === 'VkWebAppInitResult' && response.data['events_list']) {
+        desktopEvents = [].concat(response.data['events_list']);
+      }
     }
   } else if (event.detail && event.detail.data) {
-    reponse = _extends({}, event.detail);
-    promise = promises[reponse.data.request_id];
+    response = _extends({}, event.detail);
+    promise = promises[response.data.request_id];
   }
-  /* eslint no-console: "off" */
 
-
-  console.log(eventType, reponse, promises);
-
-  if (reponse.data && reponse.data.request_id) {
-    promise = promises[reponse.data.request_id];
+  if (response.data && response.data.request_id) {
+    promise = promises[response.data.request_id];
 
     if (promise) {
       if (promise.customRequestId) {
-        delete reponse.data['request_id'];
+        delete response.data['request_id'];
       }
 
-      if (reponse.data['error_type']) {
-        return promise.reject(reponse);
+      if (response.data['error_type']) {
+        return promise.reject(response);
       } else {
-        return promise.resolve(reponse);
+        return promise.resolve(response);
       }
     }
   }
@@ -129,6 +130,15 @@ var index = {
         customRequestId: customRequestId
       };
     });
+  },
+  supports: function supports(handler) {
+    var isClient = typeof window !== UNDEFINED;
+    var androidBridge = isClient && window.AndroidBridge;
+    var iosBridge = isClient && window.webkit && window.webkit.messageHandlers;
+    if (androidBridge && typeof androidBridge[handler] === FUNCTION) return true;
+    if (iosBridge && iosBridge[handler] && typeof iosBridge[handler].postMessage === FUNCTION) return true;
+    if (~desktopEvents.indexOf(handler)) return true;
+    return false;
   }
 };
 
