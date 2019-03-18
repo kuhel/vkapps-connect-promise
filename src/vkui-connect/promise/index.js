@@ -46,6 +46,20 @@ var eventType = isWeb ? 'message' : 'VKWebAppEvent';
 var promises = {};
 var desktopEvents = [];
 var method_counter = 0;
+
+function getUrlParams(search) {
+  var hashes = search.slice(search.indexOf('?') + 1).split('&');
+  var params = {};
+  hashes.map(function (hash) {
+    var _hash$split = hash.split('='),
+        key = _hash$split[0],
+        val = _hash$split[1];
+
+    params[key] = decodeURIComponent(val);
+  });
+  return params;
+}
+
 window.addEventListener(eventType, function (event) {
   var promise = null;
   var response = {};
@@ -80,66 +94,75 @@ window.addEventListener(eventType, function (event) {
     }
   }
 });
-var index = {
-  /**
-   * Sends a message to native client
-   *
-   *
-   * @param {String} handler Message type
-   * @param {Object} params Message data
-   * @returns {Promise}
-   */
-  send: function send(handler, params) {
-    if (!params) {
-      params = {};
-    }
-
-    var isClient = typeof window !== UNDEFINED;
-    var androidBridge = isClient && window.AndroidBridge;
-    var iosBridge = isClient && window.webkit && window.webkit.messageHandlers;
-    var isDesktop = !androidBridge && !iosBridge;
-    var id = params['request_id'] ? params['request_id'] : "method#" + method_counter++;
-    var customRequestId = false;
-
-    if (!params.hasOwnProperty('request_id')) {
-      customRequestId = true;
-      params['request_id'] = id;
-    }
-
-    if (androidBridge && typeof androidBridge[handler] === FUNCTION) {
-      androidBridge[handler](JSON.stringify(params));
-    }
-
-    if (iosBridge && iosBridge[handler] && typeof iosBridge[handler].postMessage === FUNCTION) {
-      iosBridge[handler].postMessage(params);
-    }
-
-    if (isDesktop) {
-      parent.postMessage({
-        handler: handler,
-        params: params,
-        type: 'vk-connect'
-      }, '*');
-    }
-
-    return new Promise(function (resolve, reject) {
-      promises[id] = {
-        resolve: resolve,
-        reject: reject,
-        params: params,
-        customRequestId: customRequestId
-      };
-    });
-  },
-  supports: function supports(handler) {
-    var isClient = typeof window !== UNDEFINED;
-    var androidBridge = isClient && window.AndroidBridge;
-    var iosBridge = isClient && window.webkit && window.webkit.messageHandlers;
-    if (androidBridge && typeof androidBridge[handler] === FUNCTION) return true;
-    if (iosBridge && iosBridge[handler] && typeof iosBridge[handler].postMessage === FUNCTION) return true;
-    if (~desktopEvents.indexOf(handler)) return true;
-    return false;
+var index = (function () {
+  var urlParams = getUrlParams(window.location.href);
+	console.log(urlParams);
+  if (urlParams['vk_events']) {
+		desktopEvents = urlParams['vk_events'].split(',');
+		console.log(desktopEvents);
   }
-};
+
+  return {
+    /**
+     * Sends a message to native client
+     *
+     *
+     * @param {String} handler Message type
+     * @param {Object} params Message data
+     * @returns {Promise}
+     */
+    send: function send(handler, params) {
+      if (!params) {
+        params = {};
+      }
+
+      var isClient = typeof window !== UNDEFINED;
+      var androidBridge = isClient && window.AndroidBridge;
+      var iosBridge = isClient && window.webkit && window.webkit.messageHandlers;
+      var isDesktop = !androidBridge && !iosBridge;
+      var id = params['request_id'] ? params['request_id'] : "method#" + method_counter++;
+      var customRequestId = false;
+
+      if (!params.hasOwnProperty('request_id')) {
+        customRequestId = true;
+        params['request_id'] = id;
+      }
+
+      if (androidBridge && typeof androidBridge[handler] === FUNCTION) {
+        androidBridge[handler](JSON.stringify(params));
+      }
+
+      if (iosBridge && iosBridge[handler] && typeof iosBridge[handler].postMessage === FUNCTION) {
+        iosBridge[handler].postMessage(params);
+      }
+
+      if (isDesktop) {
+        parent.postMessage({
+          handler: handler,
+          params: params,
+          type: 'vk-connect'
+        }, '*');
+      }
+
+      return new Promise(function (resolve, reject) {
+        promises[id] = {
+          resolve: resolve,
+          reject: reject,
+          params: params,
+          customRequestId: customRequestId
+        };
+      });
+    },
+    supports: function supports(handler) {
+      var isClient = typeof window !== UNDEFINED;
+      var androidBridge = isClient && window.AndroidBridge;
+      var iosBridge = isClient && window.webkit && window.webkit.messageHandlers;
+      if (androidBridge && typeof androidBridge[handler] === FUNCTION) return true;
+      if (iosBridge && iosBridge[handler] && typeof iosBridge[handler].postMessage === FUNCTION) return true;
+      if (~desktopEvents.indexOf(handler)) return true;
+      return false;
+    }
+  };
+})();
 
 export default index;

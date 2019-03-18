@@ -45,7 +45,7 @@ export default class App extends Component {
             <UI.View activePanel="main">
                 <UI.Panel id="main">
                     <UI.PanelHeader>
-                        VK Connect Promise Test v0.1.53
+                        VK Connect Promise Test v0.1.54
                     </UI.PanelHeader>
                     <UI.Group title="Data">
                         <UI.FormLayout>
@@ -71,6 +71,7 @@ export default class App extends Component {
                                                 if (input.length > 0) {
                                                     data = JSON.parse(input);
                                                 }
+                                                console.log(VKConnect.supports);
                                                 if (VKConnect.supports(eventName)) {
                                                     VKConnect.send(eventName, data)
                                                         .then((data) => {
