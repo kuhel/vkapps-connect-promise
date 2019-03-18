@@ -116,7 +116,10 @@ var index = {
         type: 'vk-connect'
       }, '*');
     }
+    /* eslint-disable */
 
+
+    debugger;
     return new Promise(function (resolve, reject) {
       promises[id] = {
         resolve: resolve,
