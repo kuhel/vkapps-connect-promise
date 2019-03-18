@@ -38,7 +38,7 @@ if (!window.CustomEvent) {
 /* global window, parent */
 
 /* eslint no-restricted-globals: ["off", "parent"] */
-
+/* eslint no-console: "off" */
 var FUNCTION = 'function';
 var UNDEFINED = 'undefined';
 var isWeb = typeof window !== UNDEFINED && !window.AndroidBridge && !window.webkit;
@@ -55,13 +55,14 @@ function Defer() {
   });
   promise.resolve = res;
   promise.reject = rej;
+  console.log(promise);
   return promise;
 }
 
 window.addEventListener(eventType, function (event) {
   var promise = null;
   var reponse = {};
-
+  console.log('Промисы\n', promises);
   if (isWeb) {
     if (event.data && event.data.data) {
       reponse = _extends({}, event.data);
@@ -79,8 +80,6 @@ window.addEventListener(eventType, function (event) {
       if (promise.customRequestId) {
         delete reponse.data['request_id'];
       }
-      /* eslint no-console: "off" */
-
 
       console.log(promise);
 
