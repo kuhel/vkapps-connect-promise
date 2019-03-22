@@ -42,15 +42,34 @@ export default class App extends Component {
         ].sort();
     }
 
+    copyToClipboard(str) {
+        const el = document.createElement('textarea');
+        el.value = str;
+        el.setAttribute('readonly', '');
+        el.style.position = 'absolute';
+        el.style.left = '-9999px';
+        document.body.appendChild(el);
+        const selected =
+            document.getSelection().rangeCount > 0
+                ? document.getSelection().getRangeAt(0)
+                : false;
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        if (selected) {
+            document.getSelection().removeAllRanges();
+            document.getSelection().addRange(selected);
+        }
+    }
+
     componentWillMount() {
         const hash = window.location.hash;
         if (hash) {
             const params = atob(hash.slice(1)).split('@');
             if (params.length === 2) {
-                debugger;
                 this.setState({
                     eventName: params[0],
-                    eventValid: VKConnect.supports(params[0]),
+                    eventValid: ~this.events.indexOf(params[0]),
                     eventData: params[1],
                 });
             }
@@ -88,64 +107,69 @@ export default class App extends Component {
                                 // placeholder='{"method": "users.get", "params": {}}'
                                 defaultValue={this.state.eventData}
                             />
-                            <UI.Button size="xl" level="commerce" onClick={() => {
-                                let data = {};
-                                try {
-                                    let input = document.getElementById('data').value;
-                                    let eventName = document.getElementById('custom_event').value;
-                                    if (input.length > 0) {
-                                        data = JSON.parse(input);
-                                    }
-                                    if (~this.events.indexOf(eventName)) {
-                                    // if (true) {
-                                        this.setState({
-                                            eventName,
-                                            eventValid: true,
-                                            eventData: data,
-                                        });
-                                        VKConnect.send(eventName, data)
-                                            .then((data) => {
-                                                console.log(data);
-                                                let type = data.type;
-                                                if (['VKWebAppUpdateInfo', 'VKWebAppUpdateInsets', 'VKWebAppUpdateConfig'].indexOf(type) === -1) {
-                                                    document.getElementById('response').value = JSON.stringify(data);
-                                                }
-                                            })
-                                            .catch((data) => {
-                                                let type = data.type;
-                                                if (['VKWebAppUpdateInfo', 'VKWebAppUpdateInsets', 'VKWebAppUpdateConfig'].indexOf(type) === -1) {
-                                                    document.getElementById('response').value = JSON.stringify(data);
-                                                }
+                            <UI.Div style={{ display: 'flex', padding: 0 }}>
+                                <UI.Button size="xl" stretched style={{ marginRight: 8 }} level="commerce" onClick={() => {
+                                    let data = {};
+                                    try {
+                                        let input = document.getElementById('data').value;
+                                        let eventName = document.getElementById('custom_event').value;
+                                        if (input.length > 0) {
+                                            data = JSON.parse(input);
+                                        }
+                                        if (~this.events.indexOf(eventName)) {
+                                            // if (true) {
+                                            this.setState({
+                                                eventName,
+                                                eventValid: true,
+                                                eventData: data,
                                             });
-                                        console.log(`${eventName}@${input}`);
-                                        VKConnect.send('VKWebAppSetLocation', {
-                                            location: btoa(`${eventName}@${input}`)
-                                        })
-                                            .then((data) => {
-                                                console.log(data);
-                                                let type = data.type;
-                                                if (['VKWebAppUpdateInfo', 'VKWebAppUpdateInsets', 'VKWebAppUpdateConfig'].indexOf(type) === -1) {
-                                                    document.getElementById('response').value = JSON.stringify(data);
-                                                }
+                                            VKConnect.send(eventName, data)
+                                                .then((data) => {
+                                                    console.log(data);
+                                                    let type = data.type;
+                                                    if (['VKWebAppUpdateInfo', 'VKWebAppUpdateInsets', 'VKWebAppUpdateConfig'].indexOf(type) === -1) {
+                                                        document.getElementById('response').value = JSON.stringify(data);
+                                                    }
+                                                })
+                                                .catch((data) => {
+                                                    let type = data.type;
+                                                    if (['VKWebAppUpdateInfo', 'VKWebAppUpdateInsets', 'VKWebAppUpdateConfig'].indexOf(type) === -1) {
+                                                        document.getElementById('response').value = JSON.stringify(data);
+                                                    }
+                                                });
+                                            console.log(`${eventName}@${input}`);
+                                            VKConnect.send('VKWebAppSetLocation', {
+                                                location: btoa(`${eventName}@${input}`)
                                             })
-                                            .catch((data) => {
-                                                console.log(data);
-                                                let type = data.type;
-                                                if (['VKWebAppUpdateInfo', 'VKWebAppUpdateInsets', 'VKWebAppUpdateConfig'].indexOf(type) === -1) {
-                                                    document.getElementById('response').value = JSON.stringify(data);
-                                                }
+                                                .then((data) => {
+                                                    console.log(data);
+                                                    let type = data.type;
+                                                    if (['VKWebAppUpdateInfo', 'VKWebAppUpdateInsets', 'VKWebAppUpdateConfig'].indexOf(type) === -1) {
+                                                        document.getElementById('response').value = JSON.stringify(data);
+                                                    }
+                                                })
+                                                .catch((data) => {
+                                                    console.log(data);
+                                                    let type = data.type;
+                                                    if (['VKWebAppUpdateInfo', 'VKWebAppUpdateInsets', 'VKWebAppUpdateConfig'].indexOf(type) === -1) {
+                                                        document.getElementById('response').value = JSON.stringify(data);
+                                                    }
+                                                });
+                                        } else {
+                                            this.setState({
+                                                eventName,
+                                                eventValid: false,
+                                                eventData: input,
                                             });
-                                    } else {
-                                        this.setState({
-                                            eventName,
-                                            eventValid: false,
-                                            eventData: input,
-                                        });
+                                        }
+                                    } catch(e) {
+                                        alert(e);
                                     }
-                                } catch(e) {
-                                    alert(e);
-                                }
-                            }}>Send Event</UI.Button>
+                                }}>Send Event</UI.Button>
+                                {/*<UI.Button size="xl" stretched level="secondary" onClick={() => {*/}
+                                    {/*this.copyToClipboard();*/}
+                                {/*}}>Copy Link</UI.Button>*/}
+                            </UI.Div>
                         </UI.FormLayout>
                     </UI.Group>
 
@@ -154,7 +178,6 @@ export default class App extends Component {
                             {
                                 this.events.map(function(eventName) {
                                     return (
-                                        // VKConnect.supports(eventName) &&
                                         <UI.ListItem onClick={() => {
                                             let input = document.getElementById('custom_event');
                                             input.value = eventName;
