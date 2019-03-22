@@ -5,6 +5,19 @@ import * as UI from '@vkontakte/vkui';
 import VKConnect from 'vkui-connect-promise';
 import '@vkontakte/vkui/dist/vkui.css';
 
+let APP_ID = 6909581;
+let query = {};
+if (window.location.search) {
+    window.location.search.slice(1).split('&').forEach((item) => {
+        const [key, value] = item.split('=');
+        query[key] = value;
+    });
+}
+if (Object.keys(query) && query['vk_app_id']) {
+    APP_ID = query['vk_app_id'];
+}
+
+
 export default class App extends Component {
     constructor(props) {
         super(props);
@@ -82,7 +95,7 @@ export default class App extends Component {
             <UI.View activePanel="main">
                 <UI.Panel id="main">
                     <UI.PanelHeader>
-                        VK Connect Test App v0.1.1
+                        VK Connect Test App v0.1.2
                     </UI.PanelHeader>
 
                     <UI.Group title="Response">
@@ -166,9 +179,12 @@ export default class App extends Component {
                                         alert(e);
                                     }
                                 }}>Send Event</UI.Button>
-                                {/*<UI.Button size="xl" stretched level="secondary" onClick={() => {*/}
-                                    {/*this.copyToClipboard();*/}
-                                {/*}}>Copy Link</UI.Button>*/}
+                                <UI.Button size="xl" stretched level="secondary" onClick={() => {
+                                    const input = document.getElementById('data').value;
+                                    const eventName = document.getElementById('custom_event').value;
+                                    const link = `https://vk.com/app${APP_ID}#${btoa(`${eventName}@${input}`)}`;
+                                    this.copyToClipboard(link);
+                                }}>Copy Link</UI.Button>
                             </UI.Div>
                         </UI.FormLayout>
                     </UI.Group>
