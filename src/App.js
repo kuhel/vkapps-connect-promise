@@ -72,9 +72,6 @@ export default class App extends Component {
                         </UI.FormLayout>
                     </UI.Group>
 
-                    <h1>{this.state.eventName}</h1>
-                    <h3>{this.state.eventData}</h3>
-
                     <UI.Group title="VK Connect Event">
                         <UI.FormLayout>
                             <UI.Input
