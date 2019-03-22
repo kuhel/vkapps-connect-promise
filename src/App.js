@@ -82,7 +82,7 @@ export default class App extends Component {
             <UI.View activePanel="main">
                 <UI.Panel id="main">
                     <UI.PanelHeader>
-                        VK Connect Test App v0.0.1
+                        VK Connect Test App v0.1.1
                     </UI.PanelHeader>
 
                     <UI.Group title="Response">
