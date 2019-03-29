@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import * as UI from '@vkontakte/vkui';
-// import * as VKConnect from '@vkontakte/vkui-connect';
-// import VKConnect from './vkui-connect/promise';
-import VKConnect from 'vkui-connect-promise';
+import VKConnect from '@vkontakte/vkui-connect-promise';
 import '@vkontakte/vkui/dist/vkui.css';
 
 let APP_ID = 6909581;
@@ -55,6 +53,13 @@ export default class App extends Component {
         ].sort();
     }
 
+    setData = (data, type) => {
+        if (['VKWebAppUpdateInfo', 'VKWebAppUpdateInsets', 'VKWebAppUpdateConfig'].indexOf(type) === -1
+        && !(type === 'VKWebAppSetLocationResult' && data.data.hasOwnProperty('request_id') && data.data.request_id === 'customsetlocationevent')) {
+            document.getElementById('response').value = JSON.stringify(data);
+        }
+    }
+
     copyToClipboard(str) {
         const el = document.createElement('textarea');
         el.value = str;
@@ -95,7 +100,7 @@ export default class App extends Component {
             <UI.View activePanel="main">
                 <UI.Panel id="main">
                     <UI.PanelHeader>
-                        VK Connect Test App v0.1.2
+                        VK Connect Test App v0.1.3
                     </UI.PanelHeader>
 
                     <UI.Group title="Response">
@@ -140,33 +145,25 @@ export default class App extends Component {
                                                 .then((data) => {
                                                     console.log(data);
                                                     let type = data.type;
-                                                    if (['VKWebAppUpdateInfo', 'VKWebAppUpdateInsets', 'VKWebAppUpdateConfig'].indexOf(type) === -1) {
-                                                        document.getElementById('response').value = JSON.stringify(data);
-                                                    }
+                                                    this.setData(data, type);
                                                 })
                                                 .catch((data) => {
                                                     let type = data.type;
-                                                    if (['VKWebAppUpdateInfo', 'VKWebAppUpdateInsets', 'VKWebAppUpdateConfig'].indexOf(type) === -1) {
-                                                        document.getElementById('response').value = JSON.stringify(data);
-                                                    }
+                                                    this.setData(data, type);
                                                 });
-                                            console.log(`${eventName}@${input}`);
                                             VKConnect.send('VKWebAppSetLocation', {
-                                                location: btoa(`${eventName}@${input}`)
+                                                location: btoa(`${eventName}@${input}`),
+                                                request_id: 'customsetlocationevent',
                                             })
                                                 .then((data) => {
                                                     console.log(data);
                                                     let type = data.type;
-                                                    if (['VKWebAppUpdateInfo', 'VKWebAppUpdateInsets', 'VKWebAppUpdateConfig'].indexOf(type) === -1) {
-                                                        document.getElementById('response').value = JSON.stringify(data);
-                                                    }
+                                                    this.setData(data, type);
                                                 })
                                                 .catch((data) => {
                                                     console.log(data);
                                                     let type = data.type;
-                                                    if (['VKWebAppUpdateInfo', 'VKWebAppUpdateInsets', 'VKWebAppUpdateConfig'].indexOf(type) === -1) {
-                                                        document.getElementById('response').value = JSON.stringify(data);
-                                                    }
+                                                    this.setData(data, type);
                                                 });
                                         } else {
                                             this.setState({

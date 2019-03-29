@@ -8,6 +8,7 @@
 
 # production
 /build
+/src/vkui-connect
 
 # misc
 .DS_Store
