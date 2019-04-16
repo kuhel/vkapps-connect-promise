@@ -15,6 +15,11 @@ if (Object.keys(query) && query['vk_app_id']) {
     APP_ID = query['vk_app_id'];
 }
 
+const isClient = typeof window !== 'undefined';
+const androidBridge = isClient && window.AndroidBridge;
+const iosBridge = isClient && window.webkit && window.webkit.messageHandlers;
+const isWeb = !androidBridge && !iosBridge;
+
 
 export default class App extends Component {
     constructor(props) {
@@ -87,11 +92,12 @@ export default class App extends Component {
             if (params.length === 2) {
                 this.setState({
                     eventName: params[0],
-                    eventValid: ~this.events.indexOf(params[0]),
+                    eventValid: isWeb ? ~this.events.indexOf(params[0]) : VKConnect.supports(params[0]),
                     eventData: params[1],
                 });
             }
         }
+        console.log(isWeb)
     }
 
     render() {
@@ -100,7 +106,7 @@ export default class App extends Component {
             <UI.View activePanel="main">
                 <UI.Panel id="main">
                     <UI.PanelHeader>
-                        VK Connect Test App v0.1.3
+                        VK Connect Test App v0.1.5
                     </UI.PanelHeader>
 
                     <UI.Group title="Response">
@@ -131,14 +137,14 @@ export default class App extends Component {
                                     try {
                                         let input = document.getElementById('data').value;
                                         let eventName = document.getElementById('custom_event').value;
+                                        const isValidEvent = isWeb ? ~this.events.indexOf(eventName) : VKConnect.supports(eventName);
                                         if (input.length > 0) {
                                             data = JSON.parse(input);
                                         }
-                                        if (~this.events.indexOf(eventName)) {
-                                            // if (true) {
+                                        if (isValidEvent) {
                                             this.setState({
                                                 eventName,
-                                                eventValid: true,
+                                                eventValid: isValidEvent,
                                                 eventData: data,
                                             });
                                             VKConnect.send(eventName, data)
@@ -168,7 +174,7 @@ export default class App extends Component {
                                         } else {
                                             this.setState({
                                                 eventName,
-                                                eventValid: false,
+                                                eventValid: isValidEvent,
                                                 eventData: input,
                                             });
                                         }
