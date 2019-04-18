@@ -55,12 +55,13 @@ export default class App extends Component {
             "VKWebAppScroll",
             "VKWebAppResizeWindow",
             "VKWebAppClose",
+            "VKWebAppSendPayload",
         ].sort();
     }
 
     setData = (data, type) => {
-        if (['VKWebAppUpdateInfo', 'VKWebAppUpdateInsets', 'VKWebAppUpdateConfig'].indexOf(type) === -1
-        && !(type === 'VKWebAppSetLocationResult' && data.data.hasOwnProperty('request_id') && data.data.request_id === 'customsetlocationevent')) {
+        if (['VKWebAppUpdateInfo', 'VKWebAppUpdateInsets', 'VKWebAppUpdateConfig'].indexOf(type) === -1 &&
+            !(type === 'VKWebAppSetLocationResult' && data.data.hasOwnProperty('request_id') && data.data.request_id === 'customsetlocationevent')) {
             document.getElementById('response').value = JSON.stringify(data);
         }
     }
@@ -73,9 +74,9 @@ export default class App extends Component {
         el.style.left = '-9999px';
         document.body.appendChild(el);
         const selected =
-            document.getSelection().rangeCount > 0
-                ? document.getSelection().getRangeAt(0)
-                : false;
+            document.getSelection().rangeCount > 0 ?
+            document.getSelection().getRangeAt(0) :
+            false;
         el.select();
         document.execCommand('copy');
         document.body.removeChild(el);
@@ -88,7 +89,7 @@ export default class App extends Component {
     componentWillMount() {
         const hash = window.location.hash;
         if (hash) {
-            const params = atob(hash.slice(1)).split('@');
+            const params = atob(hash.slice(1).replace('%3D', '=')).split('@');
             if (params.length === 2) {
                 this.setState({
                     eventName: params[0],
