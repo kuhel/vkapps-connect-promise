@@ -1,3 +1,4 @@
+/* eslint-disable */
 import '@babel/polyfill';
 
 function _extends() {
@@ -35,47 +36,31 @@ if (!window.CustomEvent) {
   })();
 }
 
-/* global window, parent */
-
-/* eslint no-restricted-globals: ["off", "parent"] */
+var DESKTOP_EVENTS = ['VKWebAppGetAuthToken', 'VKWebAppCallAPIMethod', 'VKWebAppAddToCommunity', 'VKWebAppGetGeodata', 'VKWebAppGetUserInfo', 'VKWebAppGetPhoneNumber', 'VKWebAppGetClientVersion', 'VKWebAppGetCommunityAuthToken', 'VKWebAppOpenPayForm', 'VKWebAppShare', 'VKWebAppAllowNotifications', 'VKWebAppDenyNotifications', 'VKWebAppShowWallPostBox', 'VKWebAppGetEmail', 'VKWebAppAllowMessagesFromGroup', 'VKWebAppJoinGroup', 'VKWebAppOpenApp', 'VKWebAppSetViewSettings', 'VKWebAppSetLocation', 'VKWebAppScroll', 'VKWebAppResizeWindow'];
 
 var FUNCTION = 'function';
 var UNDEFINED = 'undefined';
-var EVENT_PREFIX = 'VKWebApp';
 var isClient = typeof window !== UNDEFINED;
 var androidBridge = isClient && window.AndroidBridge;
 var iosBridge = isClient && window.webkit && window.webkit.messageHandlers;
 var isWeb = !androidBridge && !iosBridge;
 var eventType = isWeb ? 'message' : 'VKWebAppEvent';
 var promises = {};
-var desktopEvents = [];
-var method_counter = 0;
-
-function getUrlParams(search) {
-  var hashes = search.slice(search.indexOf('?') + 1).split('&');
-  var params = {};
-  hashes.map(function (hash) {
-    var _hash$split = hash.split('='),
-        key = _hash$split[0],
-        val = _hash$split[1];
-
-    params[key] = decodeURIComponent(val);
-  });
-  return params;
-}
-
+var methodCounter = 0;
+var webFrameId = '';
+var subscribers = [];
 window.addEventListener(eventType, function (event) {
   var promise = null;
   var response = {};
+
+  if (subscribers.length > 0) {
+    subscribeHandler(event);
+  }
 
   if (isWeb) {
     if (event.data && event.data.data) {
       response = _extends({}, event.data);
       promise = promises[response.data.request_id];
-
-      if (response.type === 'VkWebAppInitResult' && response.data['events_list']) {
-        desktopEvents = [].concat(response.data['events_list']);
-      }
     }
   } else if (event.detail && event.detail.data) {
     response = _extends({}, event.detail);
@@ -98,15 +83,38 @@ window.addEventListener(eventType, function (event) {
     }
   }
 });
-var index = (function () {
-  var urlParams = getUrlParams(window.location.href);
 
-  if (urlParams['vk_events']) {
-    desktopEvents = urlParams['vk_events'].split(',').map(function (event) {
-      return EVENT_PREFIX + event;
+var subscribeHandler = function subscribeHandler(event) {
+  var _subscribers = subscribers.slice();
+
+  if (isWeb) {
+    if (event.data.hasOwnProperty('webFrameId')) {
+      delete event.data.webFrameId;
+    }
+
+    if (event.data.hasOwnProperty('connectVersion')) {
+      delete event.data.connectVersion;
+    }
+
+    if (event.data.type && event.data.type === 'VKWebAppSettings') {
+      webFrameId = event.data.frameId;
+    } else {
+      _subscribers.forEach(function (fn) {
+        fn({
+          detail: _extends({}, event.data)
+        });
+      });
+    }
+  } else if (event.detail && event.detail.data) {
+    _subscribers.forEach(function (fn) {
+      fn.apply(null, {
+        detail: _extends({}, event.detail)
+      });
     });
   }
+};
 
+var index = (function () {
   return {
     /**
      * Sends a message to native client
@@ -121,7 +129,7 @@ var index = (function () {
         params = {};
       }
 
-      var id = params['request_id'] ? params['request_id'] : "method#" + method_counter++;
+      var id = params['request_id'] ? params['request_id'] : "method#" + (++methodCounter);
       var customRequestId = false;
 
       if (!params.hasOwnProperty('request_id')) {
@@ -157,8 +165,11 @@ var index = (function () {
     supports: function supports(handler) {
       if (androidBridge && typeof androidBridge[handler] === FUNCTION) return true;
       if (iosBridge && iosBridge[handler] && typeof iosBridge[handler].postMessage === FUNCTION) return true;
-      if (~desktopEvents.indexOf(handler)) return true;
+      if (~DESKTOP_EVENTS.indexOf(handler)) return true;
       return false;
+    },
+    subscribe: function subscribe(fn) {
+      subscribers.push(fn);
     }
   };
 })();

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import * as UI from '@vkontakte/vkui';
-import VKConnect from '@vkontakte/vkui-connect-promise';
+// import VKConnect from '@vkontakte/vkui-connect-promise';
+import VKConnect from './vkui-connect/promise';
 import '@vkontakte/vkui/dist/vkui.css';
 
 let APP_ID = 6909581;
@@ -86,7 +87,7 @@ export default class App extends Component {
         }
     }
 
-    componentWillMount() {
+    componentDidMount() {
         const hash = window.location.hash;
         if (hash) {
             const params = atob(hash.slice(1).replace('%3D', '=')).split('@');
@@ -98,7 +99,11 @@ export default class App extends Component {
                 });
             }
         }
-        console.log(isWeb)
+
+        VKConnect.subscribe((e) => {
+            e = e.detail;
+            console.log('Event: \n', e);
+        });
     }
 
     render() {
@@ -107,7 +112,7 @@ export default class App extends Component {
             <UI.View activePanel="main">
                 <UI.Panel id="main">
                     <UI.PanelHeader>
-                        VK Connect Test App v0.1.5
+                        VK Connect Test App v0.2.0
                     </UI.PanelHeader>
 
                     <UI.Group title="Response">
