@@ -23,9 +23,9 @@
     es6-object-assign "^1.1.0"
     svg-baker-runtime "^1.4.0"
 
-"@vkontakte/vkui-connect-promise@0.2.0-beta.0":
-  version "0.2.0-beta.0"
-  resolved "https://registry.yarnpkg.com/@vkontakte/vkui-connect-promise/-/vkui-connect-promise-0.2.0-beta.0.tgz#bc86a4e368e963c20c3c7633dfec32109674e0ec"
+"@vkontakte/vkui-connect-promise@0.2.0-beta.1":
+  version "0.2.0-beta.1"
+  resolved "https://registry.yarnpkg.com/@vkontakte/vkui-connect-promise/-/vkui-connect-promise-0.2.0-beta.1.tgz#44e644187b77d57be0018537ffafd2d447dba654"
   dependencies:
     "@babel/polyfill" "^7.4.0"
 

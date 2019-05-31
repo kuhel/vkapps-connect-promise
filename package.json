@@ -7,7 +7,7 @@
     "@vkontakte/icons": "^1.4.3",
     "@vkontakte/vkui": "^2.19.0",
     "@vkontakte/vkui-connect": "^1.1.2",
-    "@vkontakte/vkui-connect-promise": "0.2.0-beta.0",
+    "@vkontakte/vkui-connect-promise": "0.2.0-beta.1",
     "core-js": "^2.5.7",
     "gh-pages": "^1.2.0",
     "react": "^16.8.4",
