@@ -1,18 +1,18 @@
 {
   "name": "vkapps-connect-promise",
-  "version": "0.1.7",
+  "version": "0.2.23",
   "private": true,
   "homepage": "https://kuhel.github.io/vkapps-connect-promise/",
   "dependencies": {
     "@vkontakte/icons": "^1.4.3",
     "@vkontakte/vkui": "^2.19.0",
-    "@vkontakte/vkui-connect": "^1.1.2",
-    "@vkontakte/vkui-connect-promise": "0.2.0-beta.1",
+    "@vkontakte/vkui-connect-promise": "0.2.0-beta.4",
     "core-js": "^2.5.7",
     "gh-pages": "^1.2.0",
     "react": "^16.8.4",
     "react-dom": "^16.4.1",
     "react-scripts": "1.1.4",
+    "surge": "^0.21.3",
     "vkui-connect-promise": "0.1.16",
     "whatwg-fetch": "^3.0.0"
   },
@@ -22,6 +22,7 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "deploy": "gh-pages -d build",
+    "surge": "yarn build && cd build && surge --domain mini-apps-sandbox.surge.sh",
     "predeploy": "npm run build"
   }
 }

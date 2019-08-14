@@ -47,11 +47,26 @@ var isWeb = !androidBridge && !iosBridge;
 var eventType = isWeb ? 'message' : 'VKWebAppEvent';
 var promises = {};
 var methodCounter = 0;
-var webFrameId = '';
+var frameId = '';
 var subscribers = [];
 window.addEventListener(eventType, function (event) {
   var promise = null;
   var response = {};
+
+  console.log('Event: \n', event);
+  if (isWeb) {
+    if (event.data.type && event.data.type === 'VKWebAppSettings') {
+      frameId = event.data.frameId;
+    }
+
+    if (event.data.hasOwnProperty('frameId')) {
+      delete event.data.frameId;
+    }
+
+    if (event.data.hasOwnProperty('connectVersion')) {
+      delete event.data.connectVersion;
+    }
+  }
 
   if (subscribers.length > 0) {
     subscribeHandler(event);
@@ -86,25 +101,13 @@ window.addEventListener(eventType, function (event) {
 
 var subscribeHandler = function subscribeHandler(event) {
   var _subscribers = subscribers.slice();
-
+  console.log('subscribeHandler Event: \n', event);
   if (isWeb) {
-    if (event.data.hasOwnProperty('webFrameId')) {
-      delete event.data.webFrameId;
-    }
-
-    if (event.data.hasOwnProperty('connectVersion')) {
-      delete event.data.connectVersion;
-    }
-
-    if (event.data.type && event.data.type === 'VKWebAppSettings') {
-      webFrameId = event.data.frameId;
-    } else {
-      _subscribers.forEach(function (fn) {
-        fn({
-          detail: _extends({}, event.data)
-        });
+    _subscribers.forEach(function (fn) {
+      fn({
+        detail: _extends({}, event.data)
       });
-    }
+    });
   } else if (event.detail && event.detail.data) {
     _subscribers.forEach(function (fn) {
       fn.apply(null, {
@@ -129,7 +132,7 @@ var index = (function () {
         params = {};
       }
 
-      var id = params['request_id'] ? params['request_id'] : "method#" + (++methodCounter);
+      var id = params['request_id'] ? params['request_id'] : "method#" + methodCounter++;
       var customRequestId = false;
 
       if (!params.hasOwnProperty('request_id')) {
@@ -149,6 +152,7 @@ var index = (function () {
         parent.postMessage({
           handler: handler,
           params: params,
+          frameId: frameId,
           type: 'vk-connect'
         }, '*');
       }

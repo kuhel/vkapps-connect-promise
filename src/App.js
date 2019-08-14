@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import * as UI from '@vkontakte/vkui';
-// import VKConnect from '@vkontakte/vkui-connect-promise';
-import VKConnect from './vkui-connect/promise';
+import VKConnect from '@vkontakte/vkui-connect-promise';
+// import VKConnect from './vkui-connect/promise';
 import '@vkontakte/vkui/dist/vkui.css';
 
 let APP_ID = 6909581;
@@ -21,6 +21,11 @@ const androidBridge = isClient && window.AndroidBridge;
 const iosBridge = isClient && window.webkit && window.webkit.messageHandlers;
 const isWeb = !androidBridge && !iosBridge;
 
+// ucs-2 string to base64 encoded ascii
+const utoa = (str) => window.btoa(unescape(encodeURIComponent(str)));
+// base64 encoded ascii to ucs-2 string
+const atou = (str) => decodeURIComponent(escape(window.atob(str)));
+
 
 export default class App extends Component {
     constructor(props) {
@@ -33,30 +38,52 @@ export default class App extends Component {
         };
 
         this.events = [
-            "VKWebAppGetAuthToken",
-            "VKWebAppCallAPIMethod",
             "VKWebAppAddToCommunity",
-            "VKWebAppGetGeodata",
-            "VKWebAppGetUserInfo",
-            "VKWebAppGetPhoneNumber",
+            "VKWebAppAddToFavorites",
+            "VKWebAppAllowMessagesFromGroup",
+            "VKWebAppAllowNotifications",
+            "VKWebAppAudioGetStatus",
+            "VKWebAppAudioPause",
+            "VKWebAppAudioPlay",
+            "VKWebAppAudioSetPosition",
+            "VKWebAppAudioStop",
+            "VKWebAppAudioUnpause",
+            "VKWebAppCallAPIMethod",
+            "VKWebAppClose",
+            "VKWebAppDenyNotifications",
+            "VKWebAppFlashGetInfo",
+            "VKWebAppFlashSetLevel",
+            "VKWebAppGameInstalled",
+            "VKWebAppGetAuthToken",
             "VKWebAppGetClientVersion",
             "VKWebAppGetCommunityAuthToken",
-            "VKWebAppOpenPayForm",
-            "VKWebAppShare",
-            "VKWebAppAllowNotifications",
-            "VKWebAppDenyNotifications",
-            "VKWebAppShowWallPostBox",
             "VKWebAppGetEmail",
-            "VKWebAppAllowMessagesFromGroup",
+            "VKWebAppGetFriends",
+            "VKWebAppGetGeodata",
+            "VKWebAppGetPersonalCard",
+            "VKWebAppGetPhoneNumber",
+            "VKWebAppGetUserInfo",
+            "VKWebAppInit",
             "VKWebAppJoinGroup",
             "VKWebAppOpenApp",
+            "VKWebAppOpenCodeReader",
+            "VKWebAppOpenContacts",
+            "VKWebAppOpenPayForm",
             "VKWebAppOpenQR",
-            "VKWebAppSetViewSettings",
-            "VKWebAppSetLocation",
-            "VKWebAppScroll",
             "VKWebAppResizeWindow",
-            "VKWebAppClose",
+            "VKWebAppScroll",
             "VKWebAppSendPayload",
+            "VKWebAppSetLocation",
+            "VKWebAppSetPaymentToken",
+            "VKWebAppSetViewSettings",
+            "VKWebAppShare",
+            "VKWebAppShowCommunityWidgetPreviewBox",
+            "VKWebAppShowImages",
+            "VKWebAppShowMessageBox",
+            "VKWebAppShowWallPostBox",
+            "VKWebAppTapticImpactOccurred",
+            "VKWebAppTapticNotificationOccurred",
+            "VKWebAppTapticSelectionChanged",
         ].sort();
     }
 
@@ -90,7 +117,7 @@ export default class App extends Component {
     componentDidMount() {
         const hash = window.location.hash;
         if (hash) {
-            const params = atob(hash.slice(1).replace('%3D', '=')).split('@');
+            const params = atou(hash.slice(1).replace('%3D', '=')).split('@');
             if (params.length === 2) {
                 this.setState({
                     eventName: params[0],
@@ -101,8 +128,7 @@ export default class App extends Component {
         }
 
         VKConnect.subscribe((e) => {
-            e = e.detail;
-            console.log('Event: \n', e);
+            console.log('Event subscribe: \n', e);
         });
     }
 
@@ -112,7 +138,7 @@ export default class App extends Component {
             <UI.View activePanel="main">
                 <UI.Panel id="main">
                     <UI.PanelHeader>
-                        VK Connect Test App v0.2.1
+                        VK Connect Test App v0.2.26
                     </UI.PanelHeader>
 
                     <UI.Group title="Response">
@@ -164,7 +190,7 @@ export default class App extends Component {
                                                     this.setData(data, type);
                                                 });
                                             VKConnect.send('VKWebAppSetLocation', {
-                                                location: btoa(`${eventName}@${input}`),
+                                                location: utoa(`${eventName}@${input}`),
                                                 request_id: 'customsetlocationevent',
                                             })
                                                 .then((data) => {
@@ -191,7 +217,7 @@ export default class App extends Component {
                                 <UI.Button size="xl" stretched level="secondary" onClick={() => {
                                     const input = document.getElementById('data').value;
                                     const eventName = document.getElementById('custom_event').value;
-                                    const link = `https://vk.com/app${APP_ID}#${btoa(`${eventName}@${input}`)}`;
+                                    const link = `https://vk.com/app${APP_ID}#${utoa(`${eventName}@${input}`)}`;
                                     this.copyToClipboard(link);
                                 }}>Copy Link</UI.Button>
                             </UI.Div>
